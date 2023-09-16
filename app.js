@@ -13,47 +13,68 @@ const connection = mysql.createConnection({
   database: "b4tca61xzzqovujaasmp",
 });
 
-app.get("/users", (req, res) => {
-  connection.query("SELECT * FROM Persons", (err, results) => {
-    if (err) {
-      console.error("Kullanıcıları getirirken hata oluştu: " + err.stack);
-      res.status(500).send("Kullanıcıları getirirken hata oluştu.");
-    } else {
-      res.status(200).json(results);
-    }
-  });
-});
+app.get("/users", function (req, res) {
+   
+  connection.query(
+    "select * from Persons ",
+    function (err, result, fields) {
+      console.log(err);
+      console.log(result);
+      console.log(fields);
+      res.send(result);});
+    });
+
+    app.get("/users/:id", (req, res) => {
+      const elem = req.params;
+      // sql id get method
+      connection.query("select * from Persons", function (err, result, fields) {
+        // console.log(result);
+        for (let i = 0; i < result.length; i++) {
+          if (elem.id == result[i].ID) {
+            res.send(result[i]);
+          }
+        }
+      });
+    })
+
+        // app.get("/users/:id", (req, res) => {
+        //     const elem = req.params;
+        //       for (let i = 0; i < result.length; i++) {
+        //         if (elem.id == result[i].ID) {
+        //           res.send(result[i]);
+        //         }
+        //       }
+        //     });
+      
+
 
 app.delete("/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const query = "DELETE FROM Persons WHERE ID = ?";
-  connection.query(query, [userId], (err, results) => {
-    if (err) {
-      console.error("İstifadəçi silinərkən problem yarandı: " + err.stack);
-      res.status(500).send("Kullanıcı silinərkən xəta baş verdi.");
-    } else {
-      res.status(200).send("Kullanıcı başarılı bir şəkildə silindi.");
-    }
-  });
-});
+    const elem = req.params.id;
 
+    connection.query(
+      `DELETE FROM Persons WHERE ID=${elem}`,
+      function (err, result, fields) 
+      {
+        console.log(result);
+        // res.send(result);
+     }
+    );
+
+  });
+
+// post method
 app.post("/users", (req, res) => {
-  const { ad, soyad, password, adres } = req.body;
-  const query =
-    "INSERT INTO Persons (LastName,FirstName) VALUES (?, ?)";
-
-  connection.query(query, [LastName, FirstName], (err, results) => {
-    if (err) {
-      console.error(
-        "Yeni istifadəçi əlavə edilərkən problem yarandı: " + err.stack
-      );
-      res.status(500).send("Yeni istifadəçi əlavə edilərkən xəta baş verdi.");
-    } else {
-      res
-        .status(201)
-        .send("Yeni istifadəçi başarılı bir şəkildə əlavə edildi.");
-    }
+  let obj = req.body;
+  console.log(obj);
+    connection.query(
+      `INSERT INTO Persons (ID, LastName, FirstName)
+      VALUES ("${obj.id}", "${obj.name}", "${obj.surname}")`,
+      function (err, result, fields) {
+          res.send(result);
+      }
+    );
   });
-});
+        
+
 
 app.listen(process.env.PORT || 3000);
