@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
 });
 
 app.get("/users", (req, res) => {
-  connection.query("SELECT * FROM users", (err, results) => {
+  connection.query("SELECT * FROM Persons", (err, results) => {
     if (err) {
       console.error("Kullanıcıları getirirken hata oluştu: " + err.stack);
       res.status(500).send("Kullanıcıları getirirken hata oluştu.");
@@ -26,7 +26,7 @@ app.get("/users", (req, res) => {
 
 app.delete("/users/:id", (req, res) => {
   const userId = req.params.id;
-  const query = "DELETE FROM users WHERE ID = ?";
+  const query = "DELETE FROM Persons WHERE ID = ?";
   connection.query(query, [userId], (err, results) => {
     if (err) {
       console.error("İstifadəçi silinərkən problem yarandı: " + err.stack);
@@ -40,9 +40,9 @@ app.delete("/users/:id", (req, res) => {
 app.post("/users", (req, res) => {
   const { ad, soyad, password, adres } = req.body;
   const query =
-    "INSERT INTO users (ad, soyad, password, adres) VALUES (?, ?, ?, ?)";
+    "INSERT INTO Persons (LastName,FirstName) VALUES (?, ?)";
 
-  connection.query(query, [ad, soyad, password, adres], (err, results) => {
+  connection.query(query, [LastName, FirstName], (err, results) => {
     if (err) {
       console.error(
         "Yeni istifadəçi əlavə edilərkən problem yarandı: " + err.stack
@@ -56,6 +56,4 @@ app.post("/users", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+app.listen(process.env.PORT || 3000);
